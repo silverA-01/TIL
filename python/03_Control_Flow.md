@@ -5,6 +5,7 @@
 
 
 ## 1.조건문
+### if else
 ```python
 if <expression>:
     <code block>
@@ -19,14 +20,86 @@ else:
 - `code block` 앞에 들여쓰기(`4spaces`) 하는 형식을 지켜야한다.
 
 ```python
+dust = 50
 if dust > 50:
     print("50 초과")
 else:
     print("50 이하")
 ```
-
-### if else
+```
+50 이하
+```
 ### elif
+```python
+if <expression1>:
+    <code block>
+elif <expression2>:
+    <code block>
+elif <expression3>:
+    <code block>
+else:
+    <code block>
+```
+- 2개 이상의 조건을 활용할 경우 `elif <expression>:`을 활용한다.
+- 조건문은 if 부터 앞의 조건을 순서대로 검증하므로 순서에 유의해야 한다. 조건을 만족하면 아래 조건 코드로 넘어가지 않는다.
+
+```python
+dust = 50
+if dust > 50:
+    print("50 초과")
+elif dust == 50:
+    print("50")
+else:
+    print("50 미만")
+```
+```
+50
+```
+### 중첩 조건문(Nested Conditional Statement)
+조건문은 다른 조건문에 중첩될 수도 있다.
+```python
+score = 96
+
+if score >= 90 : 
+    print('A')
+    if score >= 95 :
+        print('참 잘했어요.')
+elif score >= 80 : 
+    print('B')
+elif score >= 70 : 
+    print('C')
+elif score >= 60 :
+    print('D')
+else :
+    print('F')
+```
+```
+A
+참 잘했어요.
+```
+### 조건 표현식(Conditional Expression)
+조건 표현식은 일반적으로 조건에 따라 값을 정할 때 활용된다.
+
+**삼항 연산자(Ternary Operator)** 라고 부르기도 한다.
+
+```python
+if <expression>:
+    <true_value>
+else:
+    <false_value>
+```
+> 아래는 위 조건문을 조건 표현식으로 표현한 것으로 같은 조건문이다.
+```python
+<true_value> if <expression> else <false_value>
+```
+> 아래 조건 표현식에 들어간 조건 `2`는 `True`에 가까운 값이라 참이라고 판단하여 `true_value`인 `1`이 반환되었다.
+```python
+1 if 2 else 3
+```
+```
+1
+```
+
 
 ## 반목문
 ### while
