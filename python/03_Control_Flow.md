@@ -16,7 +16,7 @@ else:
 - 조건이 `거짓`인 경우 `else:` 이후의 `code block` 문장을 수행한다.
 - `else`는 선택사항으로 생략 가능하다.
 - `if`와 `else` 사이에 선택적으로 `elif`로 복수조건을 추가할 수 있다. 
-
+- `code block` 앞에 들여쓰기(`4spaces`) 하는 형식을 지켜야한다.
 
 ### if else
 ### elif
