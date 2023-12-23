@@ -100,15 +100,87 @@ else:
 1
 ```
 
+## 반복문
+* while
+* for
 
-## 반목문
-### while
+### `while` 반복문
+`while` 문은 조건식이 `True`인 경우 반복적으로 코드를 실행
+- 조건식 뒤에 콜론(`:`)이 반드시 필요
+- 이후 실행될 코드 블럭은 `4spaces`로 들여쓰기를 해야한다.
+```python
+while <expression>:
+    <code block>
+```
+> 아래 반복문에서 `num = 10`일 때, `num`은 `True`에 가까운 값으로 본다. `while` 반복문은 `True`인 조건식에서 계속 반복해서 코드를 실행하기 떄문에 `num`이 정수에서 `False`에 가까운 값, 즉 `0`이 되면 반복문을 종료한다.
+```python
+num = 10
+total = 0
+
+while num:
+    total += num
+    num -= 1
+
+print(total)
+```
+```
+55
+```
+
 ### for
+`for`문은 시퀀스를 포함한 순회가능한 객체(iteralble)의 요소들을 순회한다.
+    - string, tuple, list, range, set, dictionary
+```python
+for <임시변수> in <순회가능한데이터(iterable)>:
+    <code block>
+```
+- `for`문 안에서 요소 값에 다른 값을 할당해도 다음 반복구문에 영향을 주지 않는다. 다음 요소 값에 의해 덮어 씌워지기 떄문이다.> `name = ['plave']`으로 다른 값이 할당되었지만 `for`구문으로 다시 돌아갈 때 `name = ['Noah', 'Yejun', 'Bambie', 'Eunho', 'Hamin']`으로 in 뒤에 나온 데이터에 대해 할당받는 과정이 발생된다.
+```python
+for name in ['Noah', 'Yejun', 'Bambie', 'Eunho', 'Hamin']:
+    print(name)
+    name = ['plave']
+```
+```
+Noah
+Yejun
+Bambie
+Eunho
+Hamin
+```
 
-### enumerate()
+### 리스트(list) 순회에서 index 활용
+`range(len(리스트))`
+- `range()`와 순회할 list의 길이를 활용하여 index를 조작할 수 있다.
+
+```python
+plave = ['Noah', 'Yejun', 'Bambie', 'Eunho', 'Hamin']
+
+for idx in range(len(plave)):
+    print(plave[idx])
+```
+```
+Noah
+Yejun
+Bambie
+Eunho
+Hamin
+```
+> 아래처럼 `for`문과 `f-strings`를 이용해서 출력할 수 있다.
+```python
+lunch = ['짜장면', '초밥', '피자']
+for idx in range(len(lunch)):
+    menu = lunch[idx]
+    print(f'{idx+1}번째 메뉴: {menu}')
+```
+```
+1번째 메뉴: 짜장면
+2번째 메뉴: 초밥
+3번째 메뉴: 피자
+```
+### `enumerate()`
 - 내장함수 중 하나로 **index**와 값을 같이 결과 값으로 보내준다.
 - 단독으로 사용하기 보다는, list 같이 iteralbe한 특성을 가진 데이터 타입과 같이 사용된다.
-- 결과 값의 데이터 타입은 tuple 
+- 결과 값의 데이터 타입은 **tuple** 
 ```python
 lunch = ['짜장면', '초밥', '피자']
 
@@ -148,7 +220,8 @@ for idx menu in enumerate(lunch, start=1):
 
 ### 1. break
 반복문을 종료한다.
-- `for` / `while` 문에서 빠져나가 `break` 조건이 참이 될 때, 반복문의 반복이 종료된다.
+- `for` / `while` 문에서 빠져나가 `break` 
+- 조건이 참이 될 때, 반복문의 반복이 종료된다.
 ```python
 while n < 5:
     print(n)
