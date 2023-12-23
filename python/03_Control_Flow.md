@@ -18,6 +18,13 @@ else:
 - `if`와 `else` 사이에 선택적으로 `elif`로 복수조건을 추가할 수 있다. 
 - `code block` 앞에 들여쓰기(`4spaces`) 하는 형식을 지켜야한다.
 
+```python
+if dust > 50:
+    print("50 초과")
+else:
+    print("50 이하")
+```
+
 ### if else
 ### elif
 
