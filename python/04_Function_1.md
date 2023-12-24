@@ -55,7 +55,7 @@ sum([1, 2, 3])
 6
 ```
 
-> `sum([1, 2, 3])` 이 return value 인 6으로 보기 때문에, 아래처럼 `int` 와 연산자로 계산할 수 있는 것이다.
+> `sum([1, 2, 3])` 을 return value 인 6으로 보기 때문에, 아래처럼 `int` 와 연산자로 계산할 수 있는 것이다.
 ```python
 sum([1, 2, 3]) + 6
 ```
@@ -213,8 +213,9 @@ func(3)
 - `*args` : 임의의 개수의 위치인자를 받음을 의미. 
   - arguments(인자들)의 약자
   - args는 변수명이라 다른 식별자로 사용해도 상관없고 `*`가 가변 인자로 역할을 부여함
+
 ```python
-def func(a, b, *args)
+def func(*args)
    return args
 
 print(func(1, 2, 'a', [1, 2, 3]))

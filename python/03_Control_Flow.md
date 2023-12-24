@@ -100,7 +100,7 @@ else:
 1
 ```
 
-## 반복문
+## 2. 반복문
 * while
 * for
 
@@ -129,12 +129,14 @@ print(total)
 
 ### for
 `for`문은 시퀀스를 포함한 순회가능한 객체(iteralble)의 요소들을 순회한다.
-    - string, tuple, list, range, set, dictionary
+ - string, tuple, list, range, set, dictionary
+  
 ```python
 for <임시변수> in <순회가능한데이터(iterable)>:
     <code block>
 ```
-- `for`문 안에서 요소 값에 다른 값을 할당해도 다음 반복구문에 영향을 주지 않는다. 다음 요소 값에 의해 덮어 씌워지기 떄문이다.> `name = ['plave']`으로 다른 값이 할당되었지만 `for`구문으로 다시 돌아갈 때 `name = ['Noah', 'Yejun', 'Bambie', 'Eunho', 'Hamin']`으로 in 뒤에 나온 데이터에 대해 할당받는 과정이 발생된다.
+- `for`문 안에서 요소 값에 다른 값을 할당해도 다음 반복구문에 영향을 주지 않는다. 다음 요소 값에 의해 덮어 씌워지기 떄문이다.
+> `name = ['plave']`으로 다른 값이 할당되었지만 `for`구문으로 다시 돌아갈 때 `name = ['Noah', 'Yejun', 'Bambie', 'Eunho', 'Hamin']`으로 in 뒤에 나온 데이터에 대해 할당받는 과정이 발생된다.
 ```python
 for name in ['Noah', 'Yejun', 'Bambie', 'Eunho', 'Hamin']:
     print(name)
@@ -216,7 +218,7 @@ for idx menu in enumerate(lunch, start=1):
 3 피자
 ```
 
-## 반복 제어
+## 3. 반복 제어
 
 ### 1. break
 반복문을 종료한다.
