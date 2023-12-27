@@ -1,0 +1,142 @@
+# 1차원 데이터 정리
+데이터를 정리하여 데이터의 특징을 파악하면, 수많은 통계분석 기법 중에서 적절한 기법을 선택해 다음 스텝으로 넘어갈 수 있다.
+
+### 데이터의 특징을 파악하는 방법
+1. 평균이나 분산 등의 수치 지표에 따라 데이터를 요약
+2. 데이터를 시각화
+
+## 데이터 불러오기 및 기본 세팅
+1. numpy와 pandas 불러오기
+```python
+import numpy as np
+import pandas as pd
+```
+2. jupyter notebook에서 표시되는 자릿수를 소수점 이하 3자리로 설정
+   - 목적 : 출력 결과를 더 잘 제어하거나 보기 좋게 표현하기 위해 활용
+   - jupyter notebook에서 `%` 기호는 매직 커맨드(Magic Commands)를 실행하여 특수설정을 할 수 있다. `%` 뒤에 오는 명령어에 따라 다양한 설정이나 기능을 활용할 수 있다.
+  
+   - `%precision` : jupyter notebook에서 출력되는 숫자의 소수점 이하의 자릿수를 설정하는 매직 커맨드
+```python
+%precision 3
+```
+3. pandas의 DataFrame의 출력을 소수점 이하 3자리로 제한
+   - 목적 : 출력 결과를 더 잘 제어하거나 보기 좋게 표현하기 위해 활용
+   - `pd.set_option()`은 pandas에서 출력 옵션을 조절하는 함수
+```python
+pd.set_option('display.precision', 3)
+```
+4. 데이터가 담긴 csv 파일 읽어오기
+   - 불러올 csv 파일이 있는 디렉토리 경로와 파일명에 맞게 입력한다.
+   - 'student number' 이름의 column을 index로 사용한다.
+   - csv 파일에서 불러온 DataFrame을  `df` 변수에 할당했다.
+```python
+df = pd.read_csv('../data/ch2_scores_em.csv', index_col='student number')
+```
+5. 불러온 데이터 확인 - 특정 개수의 row만 표시
+   - `.head()`는 pandas 메서드로, 데이터의 처음부터 특정 개수의 행(row)을 반환한다. 기본값으로 5 row를 반환하게 되어있지만, 원하는 개수를 `()`안에 지정할 수 있다.
+```python
+df.head()
+```
+> 따로 반환할 row의 개수를 적지 않았기 때문에 처음부터 5 row를 표시한다.
+
+6. 데이터를 numpy로 계산하기 위해 pandas DataFrame의 인스턴스인 `df`의 column 중 `english` 이름을 가진 column을 뽑아와서 **numpy에 배열로 변환**한다.
+    - `np.array()` : numpy에서 다차원 배열울 생성하는 함수. 순회할 수 있는(iterable) 모든 객체는 numpy 배열로 변환할 수 있다. numpy로 변환시 수치 연산을 수행하는데 효율적이다.
+```python
+np.array(df['english'])
+```
+7. 배열로 변환되었기 때문에 indexing과 slicing이 가능하다. 처음 10명의 `english` 점수를 확인하기 위해 `[:10]`으로 slicing 해준다. 배열로 변환작업과 슬라이싱 작업이 된 객체를 `scores` 변수에 할당했다.
+```python
+scores = np.array(df['english'])[:10]
+scores
+```
+```
+array([42, 69, 56, 41, 57, 48, 65, 49, 65, 58], dtype=int64)
+```
+8. 배열인 `scores`를 pandas Dataframe으로 변환하고 싶으면 아래와 같다.
+   - `pd.DataFrame()` : DataFrame을 생성하는 함수
+     - `()` 안에 DataFrame에 포함될 데이터 혹은 데이터와 관련된 매개변수가 필요하다. 데이터로 딕셔너리, 리스트의 리스트, numpy 배열 등이 가능하다.
+     ```python
+     # 다양한 형태의 데이터를 DataFrame으로 변환하기 예시
+     # Pandas 불러오기
+     import pandas as pd
+
+     # 딕셔너리 사용
+     data1 = {'Name': ['John', 'Jane', 'Bob'], 'Age': [25, 30, 22]}
+     
+     #리스트의 리스트 사용
+     data2 = [['John', 25, 'New York'], ['Jane', 30, 'San Francisco']]
+
+     # Numpy의 배열 사용
+     data3 = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+
+     # DataFrame 생성
+     df1 = pd.DataFrame(data1)
+     df2 = pd.DataFrame(data2)
+     df3 = pd.DataFrame(data3)
+     ``` 
+> 아래 코드에서는 DataFrame에 포함될 데이터로 딕셔너리 형태를 넣었다. column 명 'score' 문자열을 `key` 값에 넣고, 7번에서 만든 `df`의 column 중 `english` 이름을 가진 column을 뽑아와서 **numpy에 배열로 변환한 `scores`를 `value` 값에 넣었다.
+```python
+scores_df = pd.DataFrame({'scores':scores})
+``` 
+   - `pd.DataFrame()`의 매개변수로 `index`와 `name`을 사용
+   - `index` 매개변수는 row의 index를 지정한다. `pd.Index(['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']`으로 각 index의 이름을 지정해주었다.
+   - `name` 매개변수는 index의 column 명을 지정한다.
+```python
+scores_df = pd.DataFrame({'score': scores}, index=pd.Index(['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'], name='student'))
+```
+## 데이터 중심의 지표 - 대푯값
+**대푯값**은 데이터를 하나의 값으로 요약한 지표이다.
+> ex. 특정 시험의 난이도를 파악하고 싶을 때, 전체 학생의 시험 점수를 확인하지 않더라도 대푯값으로 평균 점수로 파악할 수 있다. 평균 점수가 30점이면 시험이 어려웠고, 평균 점수가 90점이라면 시험이 쉬웠다는 것을 의미한다.
+- 대푯값의 종류로 평균값, 중앙값, 최빈값이 있다.
+
+|대푯값|영어 표현|numpy 함수 표현|numpy 메서드 표현|pandas 메서드 표현|
+|---|---|---|---|---|
+|평균값|mean|np.mean(data_array)|data_array.mean()|data_df.mean()|
+|중앙값|median|np.median(data_arrya)||data_df.median()|
+|최빈값|mode|||data_df.mode()|
+
+- `data_array`는 `np.array()`를 이용해 데이터를 배열로 변환한 객체를 할당한 변수
+- `data_df`는 `pd.Dataframe()`를 이용해 데이터를 DataFrame으로 변환한 객체를 할당한 변수
+- `Series`는 1차원 데이터 구조에서 사용, `DataFrame`은 다차원 데이터 구조에서 사용
+
+### 1. 평균값
+데이터의 총 합을 데이터의 개수로 나눈 값
+- 파이썬에서는 다음과 같이 나타낼 수 있다.
+```python
+sum(scores) / len(scores)
+```
+```
+55.000
+```
+- Numpy에서는 `mean` 함수를 이용해 다음과 같이 나타낼 수 있다.
+  - 7번 코드의 `scores`에 함수 적용
+```python
+np.mean(scores)
+````
+```
+55.000
+```
+- DataFrame에서는 `mean` 메서드를 이용해 다음과 같이 나타낼 수 있다.
+  - 8번 코드의 `scores_df`에 메서드 적용
+```python
+scores_df.mean()
+```
+```
+score    55.0
+dtype: float64
+```
+### 2. 중앙값
+
+### 3. 최빈값
+
+
+## 데이터의 산포도 지표
+
+
+
+## 데이터의 정규화
+
+
+
+## 1차원 데이터의 시각화
+
