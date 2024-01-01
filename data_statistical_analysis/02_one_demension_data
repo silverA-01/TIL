@@ -16,6 +16,7 @@ import pandas as pd
    - jupyter notebook에서 `%` 기호는 매직 커맨드(Magic Commands)를 실행하여 특수설정을 할 수 있다. `%` 뒤에 오는 명령어에 따라 다양한 설정이나 기능을 활용할 수 있다.
   
    - `%precision` : jupyter notebook에서 출력되는 숫자의 소수점 이하의 자릿수를 설정하는 매직 커맨드
+   - precision : 정밀도
 ```python
 %precision 3
 ```
@@ -74,9 +75,11 @@ array([42, 69, 56, 41, 57, 48, 65, 49, 65, 58], dtype=int64)
      df2 = pd.DataFrame(data2)
      df3 = pd.DataFrame(data3)
      ``` 
-> 아래 코드에서는 DataFrame에 포함될 데이터로 딕셔너리 형태를 넣었다. column 명 'score' 문자열을 `key` 값에 넣고, 7번에서 만든 `df`의 column 중 `english` 이름을 가진 column을 뽑아와서 **numpy에 배열로 변환한 `scores`를 `value` 값에 넣었다.
+> 아래 코드에서는 7번에 이어서 DataFrame에 포함될 데이터로 딕셔너리 형태를 넣었다. 
+> 
+> column 명 `'score'` 문자열을 `key` 값에 넣었다. 7번에서 만든 `df`의 column 중 `english` 이름을 가진 column을 뽑아와서 numpy에 배열로 변환한 `scores`를 `value` 값에 넣었다. 새로만든 DataFrame을 `scores_df`에 할당했다.
 ```python
-scores_df = pd.DataFrame({'scores':scores})
+scores_df = pd.DataFrame({'score':scores})
 ``` 
    - `pd.DataFrame()`의 매개변수로 `index`와 `name`을 사용
    - `index` 매개변수는 row의 index를 지정한다. `pd.Index(['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']`으로 각 index의 이름을 지정해주었다.
@@ -91,15 +94,16 @@ scores_df = pd.DataFrame({'score': scores}, index=pd.Index(['A', 'B', 'C', 'D', 
 
 |대푯값|영어 표현|numpy 함수 표현|numpy 메서드 표현|pandas 메서드 표현|
 |---|---|---|---|---|
-|평균값|mean|np.mean(data_array)|data_array.mean()|data_df.mean()|
-|중앙값|median|np.median(data_arrya)||data_df.median()|
-|최빈값|mode|||data_df.mode()|
+|평균값|mean|np.mean(data_array)|data_array.mean()|data_df.mean() / data_series.mean()|
+|중앙값|median|np.median(data_array)||data_df.median() / data_series.median()|
+|최빈값|mode|||data_df.mode() / data_series.mode()|
 
 - `data_array`는 `np.array()`를 이용해 데이터를 배열로 변환한 객체를 할당한 변수
 - `data_df`는 `pd.Dataframe()`를 이용해 데이터를 DataFrame으로 변환한 객체를 할당한 변수
+- `data_series`는 `pd.Series()`를 이용해 데이터를 Series로 변환한 객체를 할당한 변수
 - `Series`는 1차원 데이터 구조에서 사용, `DataFrame`은 다차원 데이터 구조에서 사용
 
-### 1. 평균값
+### 1. 평균값(mean)
 데이터의 총 합을 데이터의 개수로 나눈 값
 - 파이썬에서는 다음과 같이 나타낼 수 있다.
 ```python
@@ -109,15 +113,15 @@ sum(scores) / len(scores)
 55.000
 ```
 - Numpy에서는 `mean` 함수를 이용해 다음과 같이 나타낼 수 있다.
-  - 7번 코드의 `scores`에 함수 적용
+> 7번 코드의 `scores`에 함수 적용
 ```python
 np.mean(scores)
 ````
 ```
 55.000
 ```
-- DataFrame에서는 `mean` 메서드를 이용해 다음과 같이 나타낼 수 있다.
-  - 8번 코드의 `scores_df`에 메서드 적용
+- DataFrame/Series에서는 `mean` 메서드를 이용해 다음과 같이 나타낼 수 있다.
+> 8번 코드의 `scores_df`에 메서드 적용
 ```python
 scores_df.mean()
 ```
@@ -125,18 +129,290 @@ scores_df.mean()
 score    55.0
 dtype: float64
 ```
-### 2. 중앙값
+### 2. 중앙값(median)
+데이터를 크기 순서대로 나열할 때 정확하게 중앙에 위치한 값
+- ex. [9, 1, 5, 3, 7]이라는 데이터를 크기 순서대로 정렬하면 [1, 3, 5, 7, 9]이고 중앙값은 5
+- 중앙값은 평균값에 비해 이상값에 영향을 덜 받는다.
+  - 데이터에 큰 이상값이 있는 경우 대푯값으로 평균값보다 중앙값이 적절하다.
+- 데이터의 개수가 짝수일 때는 중앙에 위치하는 값 2개의 평균값으로 정의한다.
+  
+- 파이썬에서는 다음과 같이 나타낼 수 있다.
+```python
+# scores = np.array(df['english'])[:10]
+# scores => array([42, 69, 56, 41, 57, 48, 65, 49, 65, 58], dtype=int64)
 
-### 3. 최빈값
+sorted_scores = np.sort(scores)
+# sorted_socres => array([41, 42, 48, 49, 56, 57, 58, 65, 65, 69], dtype=int64)
 
+n = len(sorted_scores)
+
+# 정렬된 scores 데이터의 길이가 짝수일 때
+if n % 2 == 0:
+   m0 = sorted_scores[n//2 - 1]
+   m1 = sorted_scores[n//2]
+   median = (m0 + m1) / 2   
+# 정렬된 scores 데이터의 길이가 홀수일 때
+else:
+   median = sorted_scores[n//2 - 1]
+
+median
+```
+```
+56.500
+```
+- Numpy에서는 `median` 함수를 이용해 다음과 같이 나타낼 수 있다.
+```python
+np.median(scores)
+```
+```
+56.500
+```
+- DataFrame/Series에서는 `median` 메서드를 이용해 다음과 같이 나타낼 수 있다.
+```python
+scores_df.median()
+```
+```
+56.500
+```
+
+### 3. 최빈값(mode)
+데이터에서 가장 많이 나타나는 값
+- ex. [1, 1, 1, 2, 2, 3]이라는 데이터의 최빈값은 1
+- 최빈값은 질적 데이터의 대푯값을 구할 때 사용하는 지표이다.
+  - 양적 데이터에서는 최빈값을 구하려고 해도 완전히 동일한 데이터가 여러 번 나오는 경우가 거의 없어, 유일한 값이 결정되지 않을 때가 많기 때문
+  - 대신, 도수분포표를 도입하면 양적 데이터에서도 최빈값을 자연스럽게 정의할 수 있다.
+
+- Numpy에서는 `mode` 함수가 없기 때문에, DataFrame이나 Series에서 구해보자.
+- DataFrame/Series에서는 `mode` 메서드를 이용해 다음과 같이 나타낼 수 있다.
+```python
+pd.Series([1, 1, 1, 2, 2, 3]).mode()
+```
+```
+0    1
+dtype: int64
+```
 
 ## 데이터의 산포도 지표
+### 산포도
+데이터가 얼마나 퍼져 있는지 설명하는 지표(흩어진 정도)
+- 범위, 분산, 표준편차, 사분범위 등을 산포도의 지표로 사용한다.
+- 일반적으로 산포도의 지표 값이 클수록 데이터가 넓게 퍼져 있고, 값이 작을수록 데이터가 조밀하게 분포해 있다.
+
+|산포도 지표|영어 표현|numpy 함수 표현|pandas 메서드 표현|
+|---|---|---|---|
+|편차|deviation|data_array - np.mean(data_array)||
+|분산|variance|np.var(data_array)|data_df.var(ddof=0) / data_series.var(ddof=0)|
+|표준편차|Standard deviation|np.std(scores, ddof=0)|data_df.std(ddof=0) / data_series.std(ddof=0)|
+- `data_array`는 `np.array()`를 이용해 데이터를 배열로 변환한 객체를 할당한 변수
+- `data_df`는 `pd.Dataframe()`를 이용해 데이터를 DataFrame으로 변환한 객체를 할당한 변수
+- `data_series`는 `pd.Series()`를 이용해 데이터를 Series로 변환한 객체를 할당한 변수
+- `Series`는 1차원 데이터 구조에서 사용, `DataFrame`은 다차원 데이터 구조에서 사용
+
+### 1. 편차(deviation)
+각 데이터가 평균으로부터 어느 정도 떨어져 있는가를 나타내는 지표
+
+- 편차의 평균값은 `0`이다. 때문에 산포도의 지표로 편차를 이용할 때, 평균이 항상 0이 되므로 잘 사용하지 않는다.
+- 편차의 절대값의 평균을 산포도의 지표로 사용할 수 있으나 편차의 제곱의 평균(분산)에 비해 다루기 어렵기 때문에 많이 사용하지 않는다.
+
+
+> Numpy에는 **브로드캐스트** 라는 기능이 있어 위 7번의 `scores`에 대하여 다음과 같이 편차를 구할 수 있다. `mean`은 `np.mean(scores)`가 실행된 값 `55.000`이 할당된다. `scores - mean`에서 `scores`는 Numpy 배열로 만들어진 여러 값이기 때문에, 브로드캐스트 기능이 수행되면 각 배열의 값에서 mean 값이 `-` 연산을 한다. 연산된 각 값이 배열로 반환된다. 반환된 배열을 `deviation`에 할당했다. 반환된 배열에서 `-13.`에서 `.`이 의미하는 것은 정수가 아니라 소수점 아래자리를 표시하지 않은 실수임을 표시한 것이다. 
+> 
+> 참고로 일반적인 파이썬 연산으로는 아래와 같이 반환되려면 다른 식으로 접근해야 한다. 
+>
+> > * 브로드캐스트 : 배열과 하나의 숫자와의 조합으로 이루어진 산술연산을 수행할 때, 숫자 하나와 배열의 원소별 계산이 각각 한 번씩 수행된다.
+```python
+mean = np.mean(scores) #  mean => 55.000
+
+deviation = scores - mean
+deviation
+```
+```
+array([-13.,  14.,   1., -14.,   2.,  -7.,  10.,  -6.,  10.,   3.])
+```
+
+
+### 2. (표준)분산
+편차의 제곱의 평균
+
+> 위 편차에서 구한 `deviation`의 제곱의 평균인 분산을 아래와 같이 구할 수 있다.
+```python
+np.mean(deviation ** 2)
+```
+```
+86.000
+```
+
+> 참고로 편차의 제곱을 `deviation ** 2`로 구하지 않고, Numpy에서 제곱값으로 만들어주는 `squre` 함수를 이용해 분산을 아래와 같이 구할 수 있다.
+```python
+np.squre(deviation)
+```
+```
+array([169., 196.,   1., 196.,   4.,  49., 100.,  36., 100.,   9.])
+```
+
+> Numpy `var` 함수로 분산을 다음과 같이 구할 수 있다.
+```python
+np.var(scores)
+```
+```
+86.000
+```
+
+- 분산의 종류는 두 가지로 표본분산과 불편분산으로 나뉜다.
+  - Numpy에서는 기본으로 설정된 분산은 표본분산이다.
+  - Pandas에서 기본으로 설정된 분산은 불편분산이다.
+    - `var` 메서드의 인수를 `ddof=1`이 기본으로 설정되어 있다.
+  - Pandas에서 표본분산으로 계산하고 싶다면 `var` 메서드의 인수를 `ddof=0`으로 설정하면 된다.
+  - `ddof`는 'delta degrees of freedom'의 약자로 **자유도**로 해석
+    - 독립적인 정보의 개수
+    - 통계값을 계산하기 위해 자유롭게 값을 가질 수 있는 숫자의 개수
+
+> 기본설정인 불편분산으로 계산하였기 때문에 `np.var(scores)`와 다른 값이 반환된다.
+```python
+scores_df.var()
+```
+```
+score    95.556
+dtype: float64
+```
+
+> Pandas에서 표본분산으로 계산하고 싶기 때문에 `var` 메서드의 인수를 `ddof=0`으로 설정해준다. `np.var(scores)`와 같은 값이 반환된다.
+```python
+scores_df.var(ddof=0)
+```
+```
+scores    86.0
+dtype: float64
+```
+
+### 3. 표준편차(Standard deviation)
+분산의 제곱근을 취한 값
+- 산표도 지표로 표준편차를 사용하면 원래의 데이터와 동일한 단위를 사용할 수 있다.
+
+- Numpy에서 분산을 구하는 `var` 함수와 제곱근의 값으로 만들어주는 `sqrt`함수를 사용하여 표준편차를 구할 수 있다. `sqrt` 함수의 인자로 `ddof=0`으로 하면 표본분산에 제곱근을 취한 것이 반환된다.
+```python
+np.sqrt(np.var(scores), ddof=0)
+```
+```
+9.274
+```
+
+- Numpy에서 표준편차를 구하는 `std` 함수를 사용해서 바로 표준편차를 구할 수 있다.
+```python
+np.std(scores, ddof=0)
+```
+```
+9.274
+```
+---
+
+### 4. 범위(range)
+데이터의 최대값과 최소값의 차이
+
+- 데이터 전체를 보는 것이 아니라 데이터의 최댓값과 최솟값으로 산포도를 표현하는 방법  
+- 범위가 크면 산포도가 크고, 작으면 산포도가 작다.
+- 값이 2개뿐이므로, 개략적인 지표이고 이상값에 약하다.
+```python
+np.max(data_array) - np.min(data_array)
+```
+>  `data_array`는 `np.array()`를 이용해 데이터를 배열로 변환한 객체를 할당한 변수
 
 
 
-## 데이터의 정규화
+- Numpy에서 `scores`의 범위는 다음과 같다.
+```python
+np.max(scores) - np.min(scores)
+```
+```
+28
+```
 
+### 5. 4분위수 범위(interquartile range)
+전체 데이터의 50%를 포함하는 범위
 
+- 이상값에 약한 범위의 최댓값과 최솟값이 아니라, 데이터의 상위수%에 위치하는 값과 하위수%에 위치하는 값의 차이를 취하는 방법을 취한다.
+- 데이터의 하위 25%, 50%, 75%에 위치하는 값을 각각 제1사분위수, 제 2사분위수, 제3사분위수라고 하며 $Q1$, $Q2$, $Q3$으로 나타낸다. 
+- 사분위 범위 `IQR`을 $Q3$ - $Q1$ 로 정의한다.
+- $Q2$는 `IQR`의 중앙값과 일치한다.
+
+||||
+|---|---|---|
+|데이터 하위 25% 위치하는 값|제1사분위수|$Q1$|
+|데이터 하위 50% 위치하는 값(IQR의 중앙값)|제2사분위수|$Q2$|
+|데이터 하위 75% 위치하는 값|제3사분위수|$Q3$|
+||사분위 범위|$Q3 - Q1$
+
+> `scores`의 `IQR`은 아래와 같이 구할 수 있다.
+```python
+scores_Q1 = np.percentile(scores, 25)
+scores_Q2 = np.percentile(scores, 50)
+scores_Q3 = np.percentile(scores, 75)
+scores_IQR = scores_Q3 - scores_Q1
+scores_IQR
+```
+```
+15.000
+```
+### 데이터의 지표 정리
+`describe` 메서드를 활용해 지금까지 다룬 다양한 지표를 한 번에 구할 수 있다. 즉, 데이터의 개요를 파악할 수 있다.
+
+```python
+s = pd.Series(scores)
+s.describe()
+```
+```
+count    10.000
+mean     55.000
+std       9.775
+min      41.000
+25%      48.250
+50%      56.500
+75%      63.250
+max      69.000
+dtype: float64
+```
+> `scores_df.describe()`는 원하는 데이터의 지표를 table 형태로 보여준다.
+
+## 데이터의 정규화(Normalization)
+데이터를 통일된 지표로 변환하는 것
+- 다양한 데이터를 동일한 기준으로 다룰 수 있기 때문에 데이터를 다룰 때 정규화는 일반적으로 사용한다.
+- 평균이나 분산에 의존하지 않고도 데이터의 상대적인 위치 관계를 알 수 있는 지표
+
+### 표준화(standardization)
+* **표준화** : 데이터에서 평균을 빼고 표준편차로 나누는 작업
+  - 표준화된 데이터를 **표준화 변랑(standardized data)** 혹은 **Z 점수(z-score)** 라고 한다. 
+  - $$z = \frac{data - mean}{std} $$
+
+> `scores`의 표준화를 하면, z-score를 아래와 같이 구할 수 있다.
+```python
+z = (scores - np.mean(scores)) / np.std(scores)
+z
+```
+```
+(array([-1.402,  1.51 ,  0.108, -1.51 ,  0.216, -0.755,  1.078, -0.647, 1.078,  0.323])
+```
+- 표준화된 데이터는 평균이 0, 표준편차가 1이다.
+```python
+np.mean(z), np.std(z)
+```
+```
+(-0.000, 1.000)
+```
+- ※ 데이터와 동일한 단위를 쓰는 표준편차로 나눗셈을 하고 있기 때문에, **표준화된 데이터는 점수와 같은 단위를 쓰지 않는다.**
+> `scores`는 정수형 데이터지만, 표준화된 데이터 `z`는 실수이다.
+
+### 편차값
+평균이 50, 표준편차가 10이 되도록 정규화한 값
+- $$z = 50 + 10 * \frac{data - mean}{std} $$
+
+> `scores`의 편차값은 아래와 같이 구할 수 있다.
+```python
+z = 50 + 10 * (scores - np.mean(scores)) / np.std(scores)
+z
+```
+```
+array([35.982, 65.097, 51.078, 34.903, 52.157, 42.452, 60.783, 43.53 , 60.783, 53.235])
+```
 
 ## 1차원 데이터의 시각화
 
