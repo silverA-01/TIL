@@ -1,4 +1,4 @@
-Django Basic
+# Django Basic
 ## Django란?
 장고(Django)는 파이썬으로 작성된 오픈 소스 웹(web) 프레임워크(Framework)이다.
 - 웹 서비스 개발을 위해 사용
