@@ -100,14 +100,22 @@ def index(request):
 ```
 
 ### 3. 변수 선언
+Template 태그를 사용해 html 문서 안에서 변수를 선언한 뒤 사용할 수 있다.
 ```html
 {% with <변수> = '값' %}
 {{ 변수 }}
 {% endwith %}
 ``` 
-Template 태그를 사용해 html 문서 안에서 변수를 선언한 뒤 사용할 수 있다.
 
-### 4. 기타
+### 4. 주석
+html 문서에서 사용하는 `<!-- -->` 주석은 개발자 도구에 보이는 주석이다. 브라우저 상에서 사용자에게 주석의 내용이 보이지 않지만 개발자 도구로 들어가서 코드를 확인하면 누구나 `<!-- -->` 주석이 어떻게 적혀있는지 확인할 수 있다.
+
+DTL에서 Template 태그를 활용해 개발자 도구에 보이지 않는 주석을 사용할 수 있다.
+```html
+{% comment %} 주석의 내용 기입 {% endcomment %}
+```
+
+### 5. 기타
 `extends`, `block`, `include` 등을 통해 다른 템플릿을 상속받거나 포함시킬 수 있다.
 
 [Django Template 태그 및 필터 설명 공식 문서](https://docs.djangoproject.com/en/3.2/ref/templates/builtins/)
