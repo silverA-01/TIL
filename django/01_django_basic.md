@@ -347,13 +347,10 @@ urlpatterns = [
 ]
 ```
 
+1. 첫 번째 인자로 오는 `route`에는 도메인 이후에 올 문자열(`string`)로 이루어진 URL 패턴이 들어간다. 
+
 ### 1. ROOT URL에서 `home.urls`에 관련된 포워딩 작업
 도메인 뒤에 오는 URL 경로(path)가 `home/`일 경우에 `home.urls`로 전달받아 `home` APP에서 필요한 응답하도록 설계하려고 한다.
-
-1. `include()` 함수를 사용하여 포워딩 작업을 할 수 있도록 `from django.urls import include`를 코드에 작성해준다.
-2. `urlpatterns`에서 리스트 내 요소로 `path('home/', include('home.urls'),`를 추가해 포워딩 경로를 설정해준다.
-   - 도메인 뒤 URL로 `home/`이 올 경우, 즉 현재 서버에서는 `http://127.0.0.1:8000/home/`으로 요청을 받을 경우 `'home.urls'`을 참조하여 응답하도록 포워딩한 것이다.
-
 ```python
 from django.contrib import admin
 from django.urls import path
@@ -364,6 +361,12 @@ urlpatterns = [
     path('home/', include('home.urls'),
 ]
 ```
+1. `include()` 함수를 사용하여 포워딩 작업을 할 수 있도록 `from django.urls import include`를 코드에 작성해준다.
+2. `urlpatterns`에서 리스트 내 요소로 `path('home/', include('home.urls'),`를 추가해 포워딩 경로를 설정해준다.
+   - `path()` 함수는 순서대로 `route(경로)`와 `view`를 인자(argument)로 필수적으로 필요하다. `route(경로)`에는 URL pattern에 들어갈 문자열이 들어간다. 경로에 대해 접근했을 때 `view` 인자로 들어가는 함수가 실행된다.
+   - 도메인 뒤 URL로 `home/`이 올 경우, 즉 현재 서버에서는 `http://127.0.0.1:8000/home/`으로 요청을 받을 경우 `'home.urls'`을 참조하여 응답하도록 포워딩한 것이다.
+
+
 
 ### 2. 포워딩된 `home.urls`에 `urlpatterns` 작성
 도메인 뒤 `home/`으로 URL 요청이 들어온 경우 `intro.urls`에서 포워딩하여 `home.urls`에서 그 뒤의 URL 경로(path)에 대해 지정할 수 있다.
@@ -378,12 +381,12 @@ urlpatterns = [
 ```
 1. `urlpatterns`는 포워딩 받은 URL(`home/`) 뒤에 적힐 URL과 관련하여 경로(path)설정을 위해 필요하다.
 2. `urlpatterns`에서 `path`를 받기 위해 `from django.urls import path`로 `path`를 불러오는 코드 작성이 필요하다.
-3. `urlpatterns` 리스트 요소로 받을 `path()`에는 아래와 같은 형식의 내용이 필요하다
-```python
-path('<url명/>', <해당 경로의 url 요청시 실행할 함수>)
-```
-   - 함수는 해당 경로의 url로 요청되었을 때, 어떤 작업을 할지 정의한 함수가 들어간다.
-   - `views.py`는 함수를 정의하는 곳으로, `home.views`에 정의한 특수한 함수를 가져오는 작업을 해야한다.
+3. `urlpatterns` 리스트 요소로 받을 `path()` 함수는 첫 번째 인자로 `route(경로)`, 두 번째 인자로 `view`가 필요하다.
+  - ```python
+    path('<url명/>', <해당 경로의 url 요청시 실행할 함수>)
+    ```
+    1. `route(경로)` 인자 : 현재 파일은 `intro.urls`에서 설정한 `'home/'`이라는 URL pattern을 포워딩 받은 상태이다. 이 뒤에 이어질 urlpattern을 문자열로 넣어주면 된다.
+    2. `view` 인자 : 함수는 해당 경로의 url로 요청되었을 때, 어떤 작업을 할지 정의한 함수가 들어간다. `views.py`는 Local App `home`에 관련된 함수를 정의하는 파일로, `home.views`에 정의한 특수한 함수를 가져오는 작업을 해야한다.
 
 ## `home.views`에 함수 정의
 `home.views`에서 `test`함수를 실행하면 'Hello'라는 문자열이 return 되도록 정의했다.
@@ -409,12 +412,12 @@ urlpatterns = [
   path('test/', views.test),
 ]
 ```
-### 1.`path`의 첫 번째 인자 - URL 경로 설정
-  - 현재 ROOT URL에서 `home/` URL로 요청이 오면 `home.urls`로 포워딩 된 상태이다. 따라서 `home/test/`라는 URL로 요청을 받았을 때 `test` 함수가 실행되도록 하려면 `home.urls`의 `urlpatterns`에서 `path` 첫 번째 인자로 URL 경로에는 `'test/'`만 적어주면 된다.
+### 1.`path`의 첫 번째 인자 - `route` : urlpattern 의 문자열
+  - 현재 ROOT URL에서 `'home/'` URL로 요청이 오면 `home.urls`로 포워딩 된 상태이다. 따라서 `'home/test/'`라는 URL로 요청을 받았을 때 `test` 함수가 실행되도록 하려면 `home.urls`의 `path` 첫 번째 인자로 `'test/'`만 적어주면 된다.
 ### 2. `from . import views`
    - `home.views`에 있는 `test`함수를 실행하려면 `home.urls`에서 `home.views`를 불러오는 작업을 해야한다. `home.views`는 모듈로서 불러올 수 있다. `from . import views`는 현재 파일이 있는 경로(`.`)에 있는 `views.py` 모듈을 불러온다는 의미이다.
-### 3. `path`의 두 번째 인자 - 첫 번째 인자에 받은 URL 경로로 요청시 함수 실행
-   - `path`의 두 번째 인자로 `views.test`는 `views.py` 모듈의 `test` 함수를 실행한다는 의미이다.
+### 3. `path`의 두 번째 인자 - `view` : `route`에 대한 URL 요청시 실행될 함수
+   - `path`의 두 번째 인자로 `route`에 대한 URL 요청시 실행될 함수를 작성한다. `views.test`는 `views.py` 모듈의 `test` 함수를 실행한다는 의미이다.
 ### 4. 컴파일링 콤마 작성
   - `path` 작성이 완료되면 마지막에 컴파일링 콤마(`,`)를 작성해준다.
 
@@ -451,9 +454,12 @@ html 문서를 생성하기 전 HTML 문서를 넣어줄 `templates` 폴더를 �
 ### 1. `index.html` 생성
 1. `home` APP 폴더에서 `templates` 폴더 생성
    - 장고에서는 `templates` 폴더 내의 html 문서를 인식하기 때문이다.
-2. `templates` 폴더 내부에 해당 APP 폴더 이름과 같은 이름의 폴더 생성
+2. 중복된 html 문서명을 탐색하지 않도록 `templates` 폴더 내부에 해당 APP 폴더 이름과 같은 이름의 폴더 생성
    - `templates`의 하위 폴더로 `home` 폴더를 생성한다.
-   - 장고에서 html 문서를 조회하는 방식은 프로젝트 `settings`에 등록된 APP 순서대로 `templates` 폴더에 있는 html 문서를 순차적으로 조회한다. 현재 `home` APP과 관련된 `index.html` 문서를 생성하여 접근하려고 하는데, 추후 생성한 APP에 같은 이름인 `index.html`문서가 있을 경우 원하지 않는 html 문서로 접근할 수 있다. 이를 방지하기 위해 `templates`의 하위 폴더로 `home` 폴더를 만들어 원하는 경로의 html 문서를 찾아가게 하는 것이다. `home`이라는 폴더명은 임의로 정한 것이기 때문에 바꿔도 괜찮지만, 전체적으로 통일된 규칙으로 작성하는 것이 좋기 때문에 APP 이름과 같은 이름으로 지을 것이다.
+   - 장고에서 html 문서를 조회하는 방식은 프로젝트 `settings`에 등록된 APP 순서대로 `templates` 폴더에 있는 html 문서를 순차적으로 조회한다. 
+     - 현재 `home` APP과 관련된 `index.html` 문서를 생성하여 접근하려고 하는데, 추후 생성한 APP에 같은 이름인 `index.html`문서가 있을 경우 장고에서 `settings`에 등록된 APP 순서대로 `templates` 폴더를 탐색하여 우선 등록된 다른 Local APP의 `index.html`문서로 접근할 수 있다. 
+   - 이를 방지하기 위해 `templates`의 하위 폴더로 `home` 폴더를 만들어 특정 경로의 html 문서를 찾아가게 하는 것이다. 
+   - `templates`의 하위폴더인 `home`이라는 폴더명은 임의로 정한 것이기 때문에 변경해도 괜찮지만, 전체적으로 통일된 규칙으로 작성하는 것이 좋기 때문에 APP 이름과 같은 이름으로 작성할 예정이다.
 3. 2번 `home` 폴더에서 `index.html` 생성
    - `index.html` 생성 후 원하는 내용을 작성해주면 된다.
 ```html
@@ -483,8 +489,8 @@ def index(request):
   return render(request, 'home/index.html')
 ```
 `home.views`에서  `index` 함수를 실행하면 위에서 생성한 `index.html`이 보여지도록(`render`) 정의해주었다.
-1. `render` 함수는 첫 번째 인자로 반드시 `request`를 받는다. 이는 장고에서 사용되는 규칙이다.
-2. `render` 함수는 두 번째 인자로 렌더링할 html의 경로를 받는다.
+1. `render` 함수는 **첫 번째 인자로 반드시 `request`를 받는다.** 이는 장고에서 사용되는 규칙이다.
+2. `render` 함수는 두 번째 인자로 **렌더링할 html의 경로**를 받는다.
    - 장고에서는 자동으로 html의 문서를 `templates` 폴더에서 찾는다. 따라서 `templates` 폴더에 대한 경로는 생략되어도 된다.
    - `index.html`은 `templates/home/index.html` 경로로 있기 때문에 `home/index.html`만 작성한다.
 
