@@ -436,7 +436,7 @@ urlpatterns = [
 html 문서를 생성하기 전 HTML 문서를 넣어줄 `templates` 폴더를 만들어야 한다. 장고는 MTV(Model Template View) 디자인 패턴을 따르기 때문이다.
 
 1. Model(모델)
-- 모델은 **DB(DataBase_데이터베이스)에 저장되는 데이터**를 의미한다. 모델은 class로 정의되며 하나의 class가 하나의 DB Table이다. 장고에서는 파이썬 언어를 사용하고, DB에서는 SQL 언어를 사용하기 때문에 장고에서 ORM(Object Relational Mapping)기능을 지원하기 때문에 파이썬 코드로 DB를 조작할 수 있다. 모델에 관련된 내용은 추후 모델과 관련된 파트에서 다시 다루도록 하겠다.
+- 모델은 데이터를 저장하는 **데이터베이스(DB)를 관리**한다. 모델은 class로 정의되며 하나의 class가 하나의 DB Table이다. 장고에서는 파이썬 언어를 사용하고, DB에서는 SQL 언어를 사용하기 때문에 장고에서 ORM(Object Relational Mapping)기능을 지원하기 때문에 파이썬 코드로 DB를 조작할 수 있다. 모델에 관련된 내용은 추후 모델과 관련된 파트에서 다시 다루도록 하겠다.
 
 2. Template(템플릿)
 - 템플릿은 사용자에게 보여지는 화면을 의미한다. 장고는 View에서 로직을 처리한 후 html 파일을 context와 함께 렌더링하는데, 이 때 **html 문서**를 템플릿이라고 칭한다. 

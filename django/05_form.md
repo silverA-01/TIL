@@ -238,8 +238,6 @@ Request information 을 확인해보면 `pong` 함수의 인자 `request`에 어
 
 `GET` 에 딕셔너리 형태로 key에는 각각 `name`으로 설정한 `title`, `content`가 들어가고 values에는 각 입력창에 해당하는 입력값 `Title Test`, `Content Test`가 들어가 있는 것을 확인할 수 있다.
 
-참고로 URL을 확인해보면 URL이 GET에 전달된 key와 value로 이루어진 것을 확인할 수 있다. 이는 `form`태그의 `method` 속성으로 `GET`으로 설정해서 그렇다. key로 설정한 입력창에 대한 변수명과 입력한 데이터에 대해 누구나 확인할 수 있다. 따라서 보안적으로 공개해도 되는 데이터에 대해서만 `GET`으로 설정해야 한다. 만약 데이터에 대한 보안이 필요할 경우 `POST`로 설정해야 하는데 이는 추후에 자세히 다룰 예정이다.
-
 ## 8. `form.views`의 `pong` 함수 수정
 `pong` 함수가 실행되면 `ping.html`에서 사용자가 입력한 데이터가 담긴 `pong.html` 가 렌더링되도록 설정해야 한다.
 
@@ -298,3 +296,108 @@ def pong(request):
 2. form aciton에 대한 경로로 'http://localhost:8000/form/pong/' URL이 요청되어 `pong` 함수가 실행되어 `pong.html`이 렌더링되어 응답한다.
     - ![Form에 입력값 제출후 응답으로 렌더링되는 `pong.html`](./asset/django_form_pong_url_2.png)
     - 1에서 입력한 데이터가 정상적으로 pong.html에 들어가 렌더링되는 것을 확인할 수 있다.
+
+## 11. `GET` 대신 `POST`로 사용자 입력 데이터 전달
+사용자가 입력한 후 응답한 페이지의 URL을 확인해보면 GET에 전달된 key와 value로 이루어진 것을 확인할 수 있다. 
+
+이는 `form`태그의 `method` 속성을 `GET`으로 설정했기 때문이다. `GET`의 key로 설정한 입력창에 대한 변수명과 value인 입력한 데이터에 대해 누구나 확인할 수 있다. 따라서 보안적으로 공개해도 되는 데이터에 대해서만 `GET`으로 설정해야 한다. 
+
+만약 공개하고 싶지 않은 데이터라면, `form`태그의 `method` 속성을 `POST`로 설정해야 한다. `POST` 방식으로 데이터를 전달하면 입력한 데이터가 보이지 않는다. 그렇다고 100% 안전하다는 의미는 아니기 때문에, 따로 네트워크 보안을 설정해야 한다.
+
+`GET`대신 `POST` 방식으로 사용자가 입력한 데이터를 전달하면 어떻게 되는지 확인해보자.
+### 1. `ping.html`에서 `method="POST"`로 수정
+```html
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Ping(Form)</h1>
+<form action="{% url "form:pong" %}" method="POST">
+
+    <div>
+        <label for="title">Title : </label>
+        <input type="text" id="title" name="title">
+    </div>
+
+    <div>
+        <label for="content">Content : </label>
+        <textarea name="content" id="content" cols="30" rows="10"></textarea>
+    </div>
+
+    <div>
+        <input type="submit">
+    </div>
+
+</form>
+{% endblock content %}
+```
+`form/templates/form/` 경로의 `ping.html`에서 `form` 태그의 `method="GET"` 속성을 `method="POST"`으로 수정한다.
+### 2. `form.views`의 `pong` 함수 수정
+```python
+def pong(request):
+    title = request.POST['title']
+    content = request.POST['content']
+    return render(request, 'form/pong.html', 
+                  {'title':title, 'content':content, }
+                  )
+```
+`pong` 함수의 인자 `request`에 받는 것이 `GET`에서 `POST`로 변경되었으니 `GET` 대신 `POST`로 함수를 수정한다.
+
+### 3. `ping.html`에서 `{% csrf_token %}` 추가
+```html
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Ping(Form)</h1>
+<form action="{% url "form:pong" %}" method="POST">
+    {% csrf_token %}
+    <div>
+        <label for="title">Title : </label>
+        <input type="text" id="title" name="title">
+    </div>
+
+    <div>
+        <label for="content">Content : </label>
+        <textarea name="content" id="content" cols="30" rows="10"></textarea>
+    </div>
+
+    <div>
+        <input type="submit">
+    </div>
+
+</form>
+{% endblock content %}
+```
+`form` 태그 내부에 `{% csrf_token %}`을 넣어준다.
+- 장고에서 `POST` 방식으로 데이터를 전달할 때 `CSRF`와 관련된 보안적인 절차를 위해 필요하다.
+> **CSRF(Cross Site Request Forgery )**
+>
+> **사이트 간의 요청 위조**의 줄임말로 흔한 웹 해킹 방식 중 하나이다. 사용자가 자신의 의지와 무관하게 공격자가 의도한 행동을 해서 특정 웹페이지를 보안에 취약하게 한다거나 수정, 삭제 등의 작업을 하게 만드는 공격 방법이다. 
+
+만약 `{% csrf_token %}`이 없는 상태로 `ping.html`에서 사용자가 입력 데이터를 제출한다면 아래 같은 경고 페이지가 나타난다.
+![form 태그 안에 {% csrf_token %} 없이 사용자 입력 데이터 전달시 나오는 경고 페이지](./asset/django_csrf_forbidden.PNG)
+
+이렇게 경고 페이지가 뜨는 것은 `intro.settings`의 `MIDDLEWARE`에서 `POST` 방식으로 데이터를 전달할 때 `{% csrf_token %}`를 넣지 않으면 경고 페이지가 뜨도록 하는 설정이 들어가있기 때문이다. 
+```python
+MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+```
+`'django.middleware.csrf.CsrfViewMiddleware'`가 해당 기능을 한다. 이 기능을 삭제 혹은 주석처리하면 `{% csrf_token %}`를 html 문서에 작성하지 않아도 경고페이지가 나오지 않지만 권장하지 않는다.
+
+### 4. 서버 실행 후 브라우저에서 확인
+!['ping.html'의 form에 사용자 입력 데이터 작성](./asset/django_form_ping_url_3.PNG)
+
+위 이미지와 같이 `'http://localhost:8000/form/ping/'`의 form에 입력값을 작성하고 제출하겠다.
+
+!['ping.html'의 form에 사용자 입력 데이터 작성](./asset/django_form_ping_url_3_dev_tool.PNG)
+`'http://localhost:8000/form/ping/'` URL을 요청한 페이지에서 개발자 도구를 열어보면 우리가 설정한 name 변수와 입력창에 입력한 데이터 value가 다르게 나오는 것을 확인할 수 있다. 이는 csrf token을 넣어줘서 자동으로 암호화한 문자열을 보여주는 것이다. 새로고침을 할 때마다 value에 다른 token이 나올 것이다.
+
+![form 태그 안에 {% csrf_token %} 있게 사용자 입력 데이터 전달시 렌더링 되는 'pong.html' 응답](./asset/django_form_pong_url_3.PNG)
+
+사용자 입력 데이터 제출시 응답하는 `pong.html`이 렌더링되었을 때, `GET`방식과 다르게 URL에서 데이터와 관련된 key, value가 보이지 않는 것을 확인할 수 있다.
