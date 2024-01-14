@@ -358,7 +358,7 @@ from django.urls import include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('home/', include('home.urls'),
+    path('home/', include('home.urls')),
 ]
 ```
 1. `include()` 함수를 사용하여 포워딩 작업을 할 수 있도록 `from django.urls import include`를 코드에 작성해준다.
