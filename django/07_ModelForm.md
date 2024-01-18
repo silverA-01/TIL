@@ -1,4 +1,4 @@
-# [실습] Form과 Model 응용
+# ModelForm - Form과 Model 응용
 `05_form.md`에서 정리한 Form과 `06_model.md`에서 정리한 Model을 활용해 Form에 사용자가 입력한 데이터를 DB에 저장하도록 아래와 같이 설계해보자.
 
 1. `01_INTRO` 프로젝트에서 `board` App 생성
@@ -6,21 +6,8 @@
    1. `title` 컬럼 => `CharField(300)`
    2. `content` 컬럼 => `TextField()`
 3. `Article` 모델 클래스 데이터 베이스에 반영
-4. `board/new/` URL로 요청시  `board.views`의 `new`함수가 실행되면서`new.html` 랜더링되는 응답
-    1. `new.html `은 제목을 입력받을 `<input>` 과 내용을 입력받을 `<textarea>` 를 포함해야함
-    2. 작성한 데이터를 `<form>` 을 통해 `POST` 방식으로 `board/create/`로 제출
-5. `board/create/` URL이 요청시 `board.views`의 `create` 함수가 실행
-    1. `new.html` 을 통해 작성한 데이터가 넘어옴
-    2. 해당 데이터를 `Article` 모델을 통해 데이터베이스에 생성 (Create)시 `board/detail/<int:pk>/`로 제출
-       - `pk`는 데이터베이스에 생성된 해당 row의 `pk` 칼럼의 필드
-6. `board/detail/<int:pk>/` URL로 요청시 `board.views`의 `detail`함수가 실행되면서 `detail.html` 랜더링되는 응답
-   - `detail.html`은 `pk`에 해당하는 row의 `title`과 `content`를 보여준다.
-   - `<button>`으로 수정 버튼을 생성하고 버튼을 클릭시 `POST` 방식으로 `board/update/<int:pk>/`로 제출
-   - `<button>`으로 삭제 버튼을 생성하고 버튼을 클릭시 `POST` 방식으로 `board/delete/<int:pk>/`로 제출
-7. `board/update/<int:pk>/` URL로 요청시 `board.views`의 `update`함수가 실행되면서 `pk`에 해당하는 row의 `title`과 `content`가 담겨있는 `update.html`이 랜더링되는 응답
-8. `board/delete/<int:pk>/` URL로 요청시 `board.views`의 `delete`함수가 실행되면서 `pk`에 해당하는 row를 삭제하고 `board/index/` 요청
-9. `board/index/` URL로 요청시 `board.views`의 `index`함수가 실행되면서 `index.html` 랜더링되는 응답
-    - `index.html`은 데이터베이스에 저장된 각 row의 제목을 리스트 형태로 보여준다.
+4. 사용자 데이터를 입력받아 `Article` 모델과 연동해 DB에 저장할 수 있는 `ArticleForm` ModelForm 생성
+5. `Article` 모델에 대해 CRUD가 이루어질 수 있게 URL, View, Template 설정
 
 ## 1. Local App `board` 생성 및 등록
 `01_INTRO` 프로젝트 경로에서 터미널에 아래 코드를 입력
@@ -164,11 +151,165 @@ class ArticleForm(forms.ModelForm):
 
 참고로 html의 `<textarea>` 를 대신할 `TextField`는 없기 때문에 `content`에 대해 `CharField`를 사용했다.
 
-## 2. URL 설정
-### 1. ROOT URL `intro.urls` 포워딩
-`intro.ulrs` 에서 `http://localhost:8000/board/` URL로 요청할 때 `board.urls`로 포워딩되도록 
-### 2. `board.urls` URL 경로 설정
-`board.urls`
+## 4. ROOT URL `intro.urls` 포워딩
+`intro.ulrs` 에서 `http://localhost:8000/board/` URL로 요청할 때 `board.urls`로 포워딩되도록 URL 경로를 설정한다.
+```python
+from django.contrib import admin
+from django.urls import path
+from django.urls import include, path
 
-## 3.`board.views` 함수 정의
 
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('home/', include('home.urls')),
+    path('form/', include('form.urls')),  
+    path('board/', include('board.urls')),
+
+]
+```
+## 5. `Article` 생성 - `board.urls` URL 경로 설정
+`board.urls`에서 설계에 필요한 URL 경로를 설정한다.
+```python
+from django.urls import path
+from . import views
+
+app_name = 'board'
+
+urlpatterns = [
+    path('create_article/', views.create_article, name='create_article'),
+    path('detail_article/', views.detail_article, name='detail_article'),
+]
+```
+1. 필요한 `path`와 `views`를 가져온다.
+2. `board` App URL 네임스페이스로 `'board'`를 매핑한다.
+3. `/board/create_article/` URL로 요청할 때
+   1. 'GET' 방식으로 요청시 : 사용자가 입력할 수 있는 `ArticleForm`이 담긴 `form.html`이 렌더링 사용자 입력 데이터를 제출시 `/board/create_article/` URL로 요청
+   2. 'POST' 방식으로 요청시 : 사용자 입력 데이터가 유효성 검사에 통과하면(유효하면/조건에 맞으면) 입력 데이터를 `Article` 모델과 매핑된 DB에 저장하고 해당 `Article`의 상세페이지(`/board/detail_article/`)를 다시 요청(`redirect`)
+
+
+### View Decorator(데코레이터)
+데코레이터는 기존에 작성된 함수에 기능을 추가하고 싶을 때, 해당 함수를 수정하지 않고 기능을 추가해주는 함수이다. 장고는 다양한 HTTP 기능을 지원하기 위해 view함수에 적용할 수 있는 여러 데코레이터를 제공한다. 
+```python
+@<데코레이터명>
+def <함수명>(request):
+    pass
+```
+기능을 추가하고 싶은 기존에 작성된 함수 위에 `@`기호와 함께 데코레이터명을 작성해주면 데코레이터가 기능을 추가해준다.
+
+`django.views.decorators.http`에서 데코레이터(decorators)는 요청된 request method에 대한 접근하도록 제한한다. 요청된 method가 아닐 경우 `405 Method Not Allowed` 에러를 응답한다.
+
+HTTP request method는 'GET'과 'POST' 두 가지이다. 
+
+1. `require_GET()` : 오직 'GET' 방식(method)
+2. 
+
+
+## 6. View - `create_article` 함수 정의
+Form의 유효성 검사를 하기 위해 ModelForm을 사용해 `ArticleForm`을 생성했다. 
+
+`board.views`에서 `create_article` 함수에 조건을 통해 두가지 기능을 수행하도록 만든다. 
+1. 사용자가 입력하기 전 비어있는 `ArticleForm`를 담은 `form.html`을 렌더링하도록 응답한다. 
+2. `ArticleForm`에 사용자가 데이터를 입력하여 제출했을 때, 사용자가 입력한 데이터가 조건에 맞는지 유효성 검사를 거쳐 유효한 Form만 DB에 저장하고, 해당 Form이 DB에 저장되는 `pk`값을 `article_pk`로 가져와 `'board/detail_article/<int:article_pk/>'`로 재요청(redirect)하도록 하자.
+
+### 1. Model과 ModelForm 가져오기
+생성한 `Article` Model과 `ArticleForm`을 가져온다.
+```python
+from django.shortcuts import render
+from .models import Article
+from .forms import ArticleForm
+```
+- `.models`는 현재 경로의 `models.py` 모듈을 의미한다. 즉 `board.models`이다.
+- `.forms`는 현재 경로의 `forms.py` 모듈을 의미한다. 즉 `board.forms`이다.
+
+
+### 2. HTTP request method 조건 달기 - GET
+HTTP request method는 'GET'과 'POST' 두 가지이다. `if` 조건문으로 HTTP request method를 'GET'과 'POST'로 각각 조건을 설정해준다. 조건이 오는 순서는 바뀌어도 상관없지만, 보통 'POST' 방식을 먼저 조건으로 걸도록 작성한다.
+
+```python
+from django.shortcuts import render
+from .models import Article
+from .forms import ArticleForm
+
+def create_article(request):
+    if request.method == 'POST':
+        pass
+    elif request.method == 'GET':
+        form = ArticleForm()
+        return render('board/form.html', {'form': form, })
+```
+1. `http://localhost:8000/board/create_article/` URL을 주소창에 입력해 페이지로 이동하면 'GET' 방식으로 요청된다. 
+2. 해당 URL 요청으로 `create_article` 함수가 실행되고, `elif request.method == 'GET':`에 대한 조건이 만족될 것이다. 
+3. 이때 반환할 것은 사용자가 입력하기 전 비어있는 `ArticleForm`이 있는 `form.html`이다.
+4. `form = ArticleForm()`으로 `ArticleForm`의 인스턴스로 `form`을 만들어준다.
+5. HTTP request method를 'GET'일 때 `form`이 담긴 `form.html`이 렌더링 되도록 `render()` 함수를 사용한다. `form.html`에 `form`을 변수로 사용할 수 있도록 context로 넘겨준다.
+
+## 7. Template - `form.html` 생성
+1. `board/templates/board/form.html` 경로에 맞게 `form.html`을 생성한다. 기본 템플릿 `base.html`을 상속받는다.
+```html
+{% extends "base.html" %}
+
+{% block content %}
+
+{% endblock content %}
+```
+
+2. `<h1>`으로 `Article Form`이라고 제목을 만들어준다. `<form>`을 만든다.
+```html
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Article Form</h1>
+<form action="">
+</form>
+{% endblock content %}
+```
+3. `{{ form }}`  : `<form>` 안에 context로 넘긴 `form`을 DTL로 넣어준다. 사용자가 입력하기 전 비어있는 `ArticleForm`이 나올 것이다.
+```html
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Article Form</h1>
+<form action="">
+    {{ form }}
+</form>
+{% endblock content %}
+```
+4. 사용자가 Form을 작성하고 제출하면 `board:create_article`로 요청한다. 즉, `'/board/create_article/'` URL로 요청하여 `create_article` 함수가 실행되도록 한다.
+```html
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Article Form</h1>
+<form action="board:create_article">
+    {{ form }}
+</form>
+{% endblock content %}
+```
+5. `<form>`의 method는 POST로 한다. POST방식으로 넘겨야 사용자가 입력한 데이터에 대해 공개되지 않는다.
+```html
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Article Form</h1>
+<form action="board:create_article" method="POST">
+    {{ form }}
+</form>
+{% endblock content %}
+```
+
+6. HTTP request method가 POST 방식이면 `csrf_token`이 보안상 필요하다. `<form>` 안에 DTL로 `csrf_token`을 넣어준다.
+```html
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Article Form</h1>
+<form action="board:create_article" method="POST">
+    {% csrf_token %}
+    {{ form }}
+</form>
+{% endblock content %}
+```
+
+## 8. `Article` 생성 - `board.views` 함수 정의
+
+7. 만약 사용자가 데이터를 입력한 `ArticleForm`을 POST 방식으로 제출하여 다시 `create_article` 함수를 호출하면 `if request.method == 'POST':` 조건에 참이 될 것이다.
