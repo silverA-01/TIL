@@ -44,30 +44,31 @@ Related Databse Manegement System (관계형 데이터베이스 관리 시스템
 
 ## DB 관련 SQL
 ### DB 생성
-> `practice`라는 이름의 DB를 생성한다.
 ```sql
 CREATE DATABASE practice
 ```
+- `practice`라는 이름의 DB를 생성한다.
 
 ### DB 확인
-> DB 확인하기. 위의 `practice` DB가 잘 만들어졌는지 확인할 수 있다.
+- DB 확인하기. 위의 `practice` DB가 잘 만들어졌는지 확인할 수 있다.
 ```sql
 SHOW DATABASES;
 ```
 
 ### DB 삭제
-> `practice` DB를 삭제한다.
 ```sql
 DROP DATABSE practice;
 ```
+- `practice` DB를 삭제한다.
 
 ### DB 사용
-> `practice` DB를 사용한다. 
->
-> SCHEMAS UI창에서 해당 DB를 더블클릭한 것과 같은 결과이다. 이때 DB명이 Bold체로 바뀐다.
+원하는 DB를 사용할 때 해당 DB에 테이블을 생성할 수 있다.
+
 ```sql
 USE practice;
 ```
+- `practice` DB를 사용한다. 
+- SCHEMAS UI창에서 해당 DB를 더블클릭한 것과 같은 결과이다. 이때 DB명이 Bold체로 바뀐다.
 
 
 ## 테이블 관련 SQL
@@ -100,25 +101,25 @@ CREATE TABLE people(
 ### 테이블 확인
 현재 사용하고 있는 DB에 존재하는 모든 테이블을 보여달라는 뜻
 
-내가 생성한 테이블이 원하는 DB를 사용할 때, 만들어야 그 테이블이 존재한다.
 ```sql
 SHOW TABLES;
 ```
 
 ### Table 설명
-> `people` 테이블에 대해 설명해주라는 뜻.
-> 
-> Field, Type, Null등의 정보가 나타난다.
+특정 테이블에 Field, Type, Null 등의 정보가 나타난다.
 ```sql
 DESC people;
 ```
 - `DESC` : Describe 설명하다의 약자
+- `people` 테이블에 대해 설명해주라는 뜻.
+
+
 
 ### TABLE 삭제
-> `people` 테이블을 삭제한다.
 ```sql
 DROP TABLE people;
 ```
+- `people` 테이블을 삭제한다.
 
 ## 데이터 삽입
 테이블은 Column과 row(record)가 존재한다.
@@ -126,34 +127,33 @@ DROP TABLE people;
   - row(reocrd) : 행. Table의 가로 줄을 의미한다.
 
 ### 하나의 row 데이터 삽입
-> 문자형 데이터는 ' '안에 데이터를 입력해야 한다.
 ```sql
 INSERT INTO people (fisrt_name, last_name, age)
 VALUES ('Noah', 'Han', 22);
-```   
+``` 
+- 문자형 데이터는 ' '안에 데이터를 입력해야 한다.
 
-   
-> 아래와 같이 테이블을 만들 때 설정한 데이터 형식에 맞지 않게 데이터를 입력한 경우, 에러 메세지가 뜨면서 실행되지 않는다.
->
-> `last_name`의 데이터 형식은 VARCHAR(20)으로 문자형 데이터가 넣어져야 하고, `age`의 데이터 형식은 INT로 정수가 들어가야 한다.
 ```sql
 INSERT INTO people (fisrt_name, last_name, age)
 VALUES ('Noah', 22, 'Han');
 ```
+- 위와 같이 테이블을 만들 때 설정한 데이터 형식에 맞지 않게 데이터를 입력한 경우, 에러 메세지가 뜨면서 실행되지 않는다.
+- `last_name`의 데이터 형식은 VARCHAR(20)으로 문자형 데이터가 넣어져야 하고, `age`의 데이터 형식은 INT로 정수가 들어가야 한다.
 
 ### 여러 개의 row 데이터 삽입하기
 ```sql
 INSERT INTO people (fist_name, last_name, age)
 VALUES
-     ('Yejun', 'Nam', 22),
+    ('Yejun', 'Nam', 22),
     ('Bonggu', 'Chae' 21),
     ('Eunho', 'Do', 20),
     ('Hamin', 'Yu', 19);
  ```
- > 4 row(s) affected Records 메세지로, 데이터 삽입 실행이 성공했음을 알 수 있다
+- `4 row(s) affected Records` 메세지로, 데이터 삽입 실행이 성공했음을 알 수 있다
 
- ### 테이블 전체 데이터 조회
- > `people` 테이블에 있는 전체 데이터를 조회한다는 뜻
- ```sql
- SELECT * FROM people;
- ```
+### 테이블 전체 데이터 조회
+
+```sql
+SELECT * FROM people;
+```
+- `people` 테이블에 있는 전체 데이터를 조회한다는 뜻
