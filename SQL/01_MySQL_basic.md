@@ -42,7 +42,7 @@ Related Databse Manegement System (관계형 데이터베이스 관리 시스템
 - `Ctrl + t` : 새로운 창을 생성한다.
 
 
-## DB 관련 SQL
+## 데이터베이스(DB) 관련 SQL
 ### DB 생성
 ```sql
 CREATE DATABASE practice
@@ -71,7 +71,7 @@ USE practice;
 - SCHEMAS UI창에서 해당 DB를 더블클릭한 것과 같은 결과이다. 이때 DB명이 Bold체로 바뀐다.
 
 
-## 테이블 관련 SQL
+## 테이블(Table) 관련 SQL
 DB는 테이블들의 집합이다.
 - 테이블을 저장할 때는, 테이블을 어떤 정보를 저장할지 정하는 것이 중요하다.
 - 어떤 정보를, 어떤 형식의 데이터로 저장할지 목적에 따라 지정한다.
@@ -80,7 +80,7 @@ DB는 테이블들의 집합이다.
   - 숫자형 데이터 형식으로 지정된 column에는 문자형 데이터를 입력할 수 없다. 입력할 경우 에러 발생.
 
 
-### 테이블 생성
+### 1. 테이블 생성
 > `people` 이라는 이름을 가진 테이블을 생성
 > 
 > `first_name` ⇒ 글자(20)
@@ -98,14 +98,14 @@ CREATE TABLE people(
 -  `VARCHA(n)` : 문자를 의미. 문자는 n자 까지 사용할 수 있다.
 - `INT` : 정수. Integer
 
-### 테이블 확인
+### 2. 테이블 확인
 현재 사용하고 있는 DB에 존재하는 모든 테이블을 보여달라는 뜻
 
 ```sql
 SHOW TABLES;
 ```
 
-### Table 설명
+### 3. 테이블 설명
 특정 테이블에 Field, Type, Null 등의 정보가 나타난다.
 ```sql
 DESC people;
@@ -114,19 +114,19 @@ DESC people;
 - `people` 테이블에 대해 설명해주라는 뜻.
 
 
-
-### TABLE 삭제
+### 4. 테이블 삭제
 ```sql
 DROP TABLE people;
 ```
 - `people` 테이블을 삭제한다.
+
 
 ## 데이터 삽입
 테이블은 Column과 row(record)가 존재한다.
   - column : 열.
   - row(reocrd) : 행. Table의 가로 줄을 의미한다.
 
-### 하나의 row 데이터 삽입
+### 1. 하나의 row 데이터 삽입
 ```sql
 INSERT INTO people (fisrt_name, last_name, age)
 VALUES ('Noah', 'Han', 22);
@@ -140,7 +140,7 @@ VALUES ('Noah', 22, 'Han');
 - 위와 같이 테이블을 만들 때 설정한 데이터 형식에 맞지 않게 데이터를 입력한 경우, 에러 메세지가 뜨면서 실행되지 않는다.
 - `last_name`의 데이터 형식은 VARCHAR(20)으로 문자형 데이터가 넣어져야 하고, `age`의 데이터 형식은 INT로 정수가 들어가야 한다.
 
-### 여러 개의 row 데이터 삽입하기
+### 2. 여러 개의 row 데이터 삽입하기
 ```sql
 INSERT INTO people (fist_name, last_name, age)
 VALUES
