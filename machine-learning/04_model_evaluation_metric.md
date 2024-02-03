@@ -18,6 +18,11 @@
 - `FP` : 실제 정답 데이터가 음성일 때, ML 알고리즘이 양성으로 잘못 예측한 것
 - `FN` : 실제 정답 데이터가 양성일 때, ML 알고리즘이 음성으로 잘못 예측한 것
 
+```python
+from sklearn.metrics import confusion_matrix
+confusion_matrix(실제 정답 데이터, ML 모델의 예측값)
+```
+
 ## 정확도(Accuracy)
 ```
 정확도 = 예측 결과가 동일한 데이터 건수 / 전체 예측 데이터 건수
@@ -31,6 +36,13 @@
 정확도 = (TP + TN) / (TP + TN + FP + FN)
 ```
 
+```python
+## 모델의 예측 정확도(Accuracy) 확인
+from sklearn.metrics import accuracy_score
+accuracy_score(Ir_pred, y_test)
+```
+
+### 사이킷런에서 정확도 확인
 ```python
 from sklearn.datasets import load_breast_cancer
 import pandas as pd
@@ -106,7 +118,75 @@ accuracy_score(Ir_pred, y_test)
 - `accuracy_score(<ML 모델의 예측값>, <테스트 데이터의 레이블 데이터>)` : 모델의 예측 정확도에 대한 점수를 반환한다.
 - 모델의 정확도는 약 96.9%로 나쁘지 않은 수치로 보일 수 있다.
 
+```python
+dolpal_pred = np.zeros_like(y_test)
+dolpal_pred
+```
+```python
+array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+       0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+       0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+       0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+       0, 0, 0, 0, 0, 0, 0, 0, 0])
+```
+- 돌팔이 의사가 암(1)을 종양(0)으로 예측한다고 해보자.
+- `y_test` 만큼의 0벡터를 만들어 모델 없이 돌팔이 의사의 예측값을 만들었다.
 
+```python
+# 돌팔이 의사의 예측 점수
+accuracy_score(dolpal_pred , y_test)
+```
+```python
+0.9072164948453608
+```
+- 돌팔이 의사는 모델을 만들어 암을 예측하는 알고리즘을 만든 것도 아닌데 정확도가 약 90%가 된다.
+- 모델 평가 지표로 정확도 하나만 본다면, 시간과 노력을 들여 위의 모델을 만드는 것 보다 돌팔이식으로 예측 모델을 만드는게 더 효율적일지도 모른다.
+- 하지만 돌팔이식 예측 모델은 암일 경우에도 종양이라고 하는 `FN`의 경우이다. 암 진단에 있어 `FN`을 줄이는 것이 좋기 때문에 정확도의 성능만 보고 모델(분류기)의 성능을 측정하는 것은 매우 위험하다.
+
+```python
+from sklearn.metrics import confusion_matrix
+```
+
+```python
+from sklearn.metrics import confusion_matrix
+
+# 모델의 오차 행렬 생성
+# 정답과 예측값을 매개변수로 넣어준다.
+Ir_conf_matrix = confusion_matrix(y_test, Ir_pred)
+
+# 돌팔이의 오차 행렬 생성
+dolpal_conf_matrix = confusion_matrix(y_test, dolpal_pred)
+
+# 모델과 돌팔이의 오차 행렬 확인
+Ir_conf_matrix, dolpal_conf_matrix
+```
+```python
+
+## 오차 행렬(혼동 행렬 - Confusion Matrix)
+from sklearn.metrics import confusion_matrix
+
+# 모델의 오차 행렬 생성
+# 정답과 예측값을 매개변수로 넣어준다.
+Ir_conf_matrix = confusion_matrix(y_test, Ir_pred)
+
+# 돌팔이의 오차 행렬 생성
+dolpal_conf_matrix = confusion_matrix(y_test, dolpal_pred)
+
+# 모델과 돌팔이의 오차 행렬 확인
+Ir_conf_matrix, dolpal_conf_matrix
+output
+(array([[87,  1],
+        [ 2,  7]]),
+ array([[88,  0],
+        [ 9,  0]]))
+```
+- 오차행렬을 생성해서 모델과 돌팔이의 오차 행렬을 비교해볼 수 있다.
+- 모델의 오차행렬
+  - FP : 종양을 암으로 판단 - 1개
+  - FN : 암을 종양으로 판단 - 2개
+- 돌팔이의 오차행렬
+  - FP : 종양을 암으로 판단 - 0개
+  - FN : 암을 종양으로 판단 - 9개
 
 ## 정밀도와 재현율
 ### 정밀도(Precision)
@@ -191,3 +271,86 @@ $$F1 = \frac{2}{(\frac{1}{\text recall})+(\frac{1}{\text precision})}$$
 - 정밀도와 재현율이 어느 한쪽으로 치우치지 않는 수치를 나타낼 때 상대적으로 높은 값을 가지게 된다.
 - 즉, 정밀도와 재현율의 균형정도를 확인할 수 있는 지표이다.
 - 정밀도와 재현율이 균형될 수록 우수한 F1 Score를 갖을 뿐, F1 Score 평가 지표만으로 모델이 우수하다고 판단하기는 어렵다.
+
+## 사이킷런에서 정밀도 재현도 확인하기
+- 위에 만들어 놓은 암판별 모델 및 돌팔이 예측에 대해 정밀도와 재현율을 확인해보겠다.
+```python
+## 정밀도, 재현율 확인하기
+from sklearn.metrics import precision_score, recall_score
+
+# 모델의 정밀도, 재현율
+print("모델의 정밀도 : {:.3f}".format(precision_score(y_test, Ir_pred)))
+print("모델의 재현율 : {:.3f}".format(recall_score(y_test, Ir_pred)))
+
+# 돌팔이의 정밀도, 재현율
+print("돌팔이의 정밀도 : {:.3f}".format(precision_score(y_test, dolpal_pred)))
+print("돌팔이의 재현율 : {:.3f}".format(recall_score(y_test, dolpal_pred)))
+```
+```python
+모델의 정밀도 : 0.875
+모델의 재현율 : 0.778
+돌팔이의 정밀도 : 0.000
+돌팔이의 재현율 : 0.000
+```
+- 정밀도와 재현율까지 확인하니, 돌팔이는 암(1)으로 예측을 아예 안하고 있다는 것을 알 수 있다.
+- 정확도는 높았으나, 정밀도와 재현율까지 확인하니 신뢰도가 떨어진다고 평가할 수 있다.
+- 정밀도와 재현율이 상대적으로 높은 모델로 보인다.
+
+```python
+## F1 Score 확인하기
+from sklearn.metrics import f1_score
+
+f1 = f1_score(y_test, Ir_pred)
+f2 = f1_score(y_test, dolpal_pred)
+f1, f2
+```
+```python
+0.823529411764706, 0.0
+```
+- 모델의 정밀도와 재현율 균형이 좋은 편이라고 볼 수 있다.
+- 돌팔이는 정밀도와 재현율이 0이었기 때문에 F1 Score도 0이다.
+
+```python
+## predict_proba()로 모델의 양성 예측 확률 확인
+pred_proba = model.predict_proba(X_test)
+# 배열이 길어서 임의로 10개만 보이도록 했다.
+pred_proba
+```
+```python
+array([[9.99263508e-01, 7.36491915e-04],
+       [9.99303414e-01, 6.96586175e-04],
+       [9.99999986e-01, 1.40395416e-08],
+       [9.99971098e-01, 2.89016200e-05],
+       [9.99999999e-01, 1.38308181e-09],
+       [9.99971452e-01, 2.85478670e-05],
+       [9.99861849e-01, 1.38150950e-04],
+       [9.99999831e-01, 1.68912971e-07],
+       [9.99955928e-01, 4.40719287e-05],
+       [1.00000000e+00, 1.72257150e-11]])
+```
+- `pred_proba[i][0]` : 0일 확률
+- `pred_proba[i][1]` : 1일 확률
+- `pred_proba()`는 모델의 양성 예측 확률을 소수점 자리수를 지수로 표현해서 반환한다.
+  - ex. `9.99e-01 = 9.99 * 10 ** -1 = 0.999`
+
+```python
+# Binarizer 클래스를 활용해서 threshold 보다 작으면 0으로, 크면 1로 분류해준다.
+from sklearn.preprocessing import Binarizer
+
+# 양성 예측 결과만 보고싶기 때문에 양성일 확률만 나오도록 pred_proba를 변형이용해서 pred_proba_positive 변수 생성
+# 1 - 양성예측확률 = 음수예측확률 이기 때문
+pred_proba_positive = pred_proba[:, 1].reshape(-1, 1)
+
+custom_threshold = 0.5
+binarizer = Binarizer(threshold=custom_threshold)
+
+```
+```
+array([[1., 0., 0., ..., 0., 0., 1.],
+       [1., 0., 0., ..., 0., 0., 1.],
+       [1., 0., 0., ..., 0., 0., 1.],
+       ...,
+       [1., 0., 0., ..., 0., 0., 1.],
+       [1., 0., 0., ..., 0., 0., 1.],
+       [1., 0., 0., ..., 0., 0., 1.]])
+```
