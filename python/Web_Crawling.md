@@ -34,7 +34,7 @@ web에서 필요한 data를 가져오는 것.
 6. kospi.py에서 설치한 파이썬 라이브러리 requests, BeautifulSoup 불러오기
    ```python
    import requests
-   from bs4 import BeaurifulSoup
+   from bs4 import BeautifulSoup
    ``` 
 
 ## 크롤링 실습
