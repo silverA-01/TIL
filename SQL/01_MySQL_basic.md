@@ -62,7 +62,7 @@ DROP DATABSE practice;
 - `practice` DB를 삭제한다.
 
 ### DB 사용
-원하는 DB를 사용할 때 해당 DB에 테이블을 생성할 수 있다.
+원하는 DB를 사용 후, 해당 DB에 테이블을 생성할 수 있다.
 
 ```sql
 USE practice;
