@@ -82,6 +82,8 @@
 
 
 ## 개발 환경 설정 - IDE(Integrated Development Environment)
+- IDE(통합 개발 환경) : 개발에 필요한 다양한 도구들이 결합되어 있는 소프트웨어
+  - 소스 편집기, 컴파일러, 디버거, 유닛테스트 등과 같은 도구들이 결합되어 있음
 ### IDE : 인텔리제이(IntelliJ) VS 이클립스(Ecliose)
 - 과거에는 이클리스를 많이 사용했지만, 최근에는 빠른 속도와 사용의 편의성 때문에 인텔리제이를 주로 사용
 - 자바로 개발하는 대부분의 메이저 회사들도 최근에는 인텔리제이를 주로 사용
@@ -153,12 +155,17 @@
 - `Alt` + `Enter` : IntelliJ IDEA의 수정 제안사항 표시
 - `Shift` + `F9` : 디버깅 시작
 - `Ctrl` + `F8` : 디버깅 breakpoint 생성 및 제거 
+- `Shift` + `Enter` : 코드 작성 시 줄 바꿈
+- `Ctrl` + `D` : Duplicate Line, 코드 라인을 아래에 복제하여 생성
+- `Alt` + `J` :  특정한 단어를 해당 라인 기준 뒤에서 하나씩 추가 선택하여 수정하기
+- `Ctrl` + `Shift` + `Alt` + `J` :  특정한 단어를 한 번에 수정하기
 
 ## Java 프로그램 실행
 1. Project 내 `src` 디렉토리에서 `New` - `Java Class` 클릭
 2. Class Name : `HelloJava` (임의)
 3. `Class` 선택
 4. `HelloJava.java` 파일 생성
+   - Class 명의 시작은 관례상 대문자로 작성해야 함
 
 ```Java
 public class HelloJava {
@@ -204,7 +211,8 @@ hello java2
 
 - `System.out.println("hello java1");`
   - `System.out.println()` : `()` 안의 값을 콘솔에 출력하는 기능
-  - 자바는 문자열을 사용할 때 `"`(쌍따옴표)를 사용한다.
+  - 자바는 문자열(String)을 사용할 때 `"`(쌍따옴표)를 사용한다.
+    - > 참고 : `'`작은따옴표는 문자(Character)를 감싸는 기호로 사용한다. 작은따옴표 사이에는 문자 하나만 입력할 수 있다.
   - `;` : 자바는 세미콜론으로 문장을 구분한다. 문장이 끝날때 필수적으로 `;`을 넣어주어야 한다.
   - `sout`을 통해 IntelliJ IDEA에서 자동 생성 가능
 
